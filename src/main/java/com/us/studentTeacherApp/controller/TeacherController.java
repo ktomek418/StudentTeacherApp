@@ -21,42 +21,12 @@ public class TeacherController {
         this.service = service;
     }
 
-    @GetMapping("")
-    public List<Teacher> getTeachers() {
-        return service.getAllTeachers();
-    }
-
-    @GetMapping("/firstNameLike/{firstName}")
-    public List<Teacher> getTeachersByFirstName(@PathVariable String firstName) {
-        return service.getAllTeachersWithFirstName(firstName);
-    }
-
-    @GetMapping("/lastNameLike/{lastName}")
-    public List<Teacher> getTeachersByLastName(@PathVariable String lastName) {
-        return service.getAllTeachersWithLastName(lastName);
-    }
-
-    @GetMapping("/sortBy/{field}")
-    public List<Teacher> getStudentsSorted(@PathVariable String field) {
-        return service.getAllTeachersSorted(field);
-    }
-
-    @GetMapping("/{pageNumber}/{pageSize}")
-    public Page<Teacher> getTeachers(@PathVariable int pageNumber, @PathVariable int pageSize){
-        return service.getAllTeachersWithPagination(pageNumber, pageSize);
-    }
-
-    @GetMapping("/sortBy/{field}/{pageNumber}/{pageSize}")
-    public Page<Teacher> getTeachers( @PathVariable String field, @PathVariable int pageNumber, @PathVariable int pageSize){
-        return service.getAllTeachersSortedWithPagination(pageNumber, pageSize, field);
-    }
-
-    @PostMapping("/add")
+    @PostMapping("")
     public void addTeacher(@Valid @RequestBody Teacher teacher) {
         service.saveTeacher(teacher);
     }
 
-    @PutMapping("/{id}/update")
+    @PutMapping("/{id}")
     public void updateTeacher(@PathVariable int id, @Valid @RequestBody Teacher updatedTeacher){
         Teacher teacher = service.getTeacher(id);
         if(teacher != null){
@@ -70,24 +40,40 @@ public class TeacherController {
     }
 
 
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping("/{id}")
     public void deleteTeacher(@PathVariable("id") int id) {
         service.deleteTeacher(id);
     }
 
-    @PostMapping("/{id}/assignStudent")
+    @GetMapping("")
+    public Page<Teacher> getTeachers(@RequestParam(defaultValue = "idTeacher")String sortBy,
+                                     @RequestParam(defaultValue = "0") int pageNumber,
+                                     @RequestParam(defaultValue = "100") int pageSize,
+                                     @RequestParam(defaultValue = "true") boolean asc) {
+        return service.getAllTeachers(pageNumber, pageSize, sortBy, asc);
+    }
+
+    @GetMapping("/{field}")
+    public List<Teacher> getTeachersWithName(@PathVariable  String field){
+        return service.getTeachersWithName(field);
+    }
+
+    @GetMapping("/{id}/students")
+    public List<Student> getAllTeacherStudents(@PathVariable int id){
+        return service.getAllTeacherStudents(id);
+    }
+
+
+
+    @PostMapping("/{id}/students")
     public void assignStudent(@PathVariable int id, @RequestParam int student_id){
         service.assignTeacherToStudent(student_id, id);
     }
 
-    @PostMapping("/{id}/removeStudent")
+    @DeleteMapping("/{id}/students")
     public void removeTeacher(@PathVariable int id, @RequestParam int student_id){
         service.removeTeacherFromUser(student_id, id);
     }
 
-    @GetMapping("/{id}/allStudents")
-    public List<Student> getAllTeacherStudents(@PathVariable int id){
-        return service.getAllTeacherStudents(id);
-    }
 
 }

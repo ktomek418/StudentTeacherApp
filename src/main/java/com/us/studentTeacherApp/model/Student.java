@@ -17,7 +17,7 @@ public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_student;
+    private int idStudent;
     @Size(min = 3,message = "Name must be longer than 2 characters")
     private String firstName;
     private String lastName;
@@ -31,8 +31,8 @@ public class Student {
             cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.DETACH})
     @JoinTable(
             name = "students_teachers",
-            joinColumns = @JoinColumn(name = "id_student"),
-            inverseJoinColumns = @JoinColumn(name = "id_teacher")
+            joinColumns = @JoinColumn(name = "idStudent"),
+            inverseJoinColumns = @JoinColumn(name = "idTeacher")
     )
     private List<Teacher> teachers;
 

@@ -1,10 +1,12 @@
 package com.us.studentTeacherApp.service;
 
+
 import com.us.studentTeacherApp.model.Student;
 import com.us.studentTeacherApp.model.Teacher;
 import com.us.studentTeacherApp.repository.StudentRepository;
 import com.us.studentTeacherApp.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+
 
 @Service
 public class StudentTeacherService {
@@ -46,20 +49,15 @@ public class StudentTeacherService {
 
     }
 
-    public List<Student> getAllStudents(){
-        return studentRepo.findAll();
+    public Page<Student> getAllStudents(int pageNumber, int pageSize, String field, boolean asc){
+        if(asc){
+            return studentRepo.findAll(PageRequest.of(pageNumber, pageSize).withSort(Sort.by(field)));
+        }
+        return studentRepo.findAll(PageRequest.of(pageNumber, pageSize).withSort(Sort.by(field).descending()));
     }
 
-    public List<Student> getAllStudentsSorted(String field){
-        return studentRepo.findAll(Sort.by(Sort.Direction.DESC,field));
-    }
-
-    public Page<Student> getAllStudentWithPagination(int pageNumber, int pageSize){
-        return studentRepo.findAll(PageRequest.of(pageNumber, pageSize));
-    }
-
-    public Page<Student> getAllStudentSortedWithPagination(int pageNumber, int pageSize, String field){
-        return studentRepo.findAll(PageRequest.of(pageNumber, pageSize).withSort(Sort.by(field)));
+    public List<Student> getStudentsWithName(String field){
+        return studentRepo.findStudentByFirstNameOrLastName(field, field);
     }
 
     public Student getStudent(int id){
@@ -79,32 +77,18 @@ public class StudentTeacherService {
         return student.getTeachers();
     }
 
-    public List<Student> getAllStudentWithFirstName(String firstName){
-        return studentRepo.findStudentByFirstName(firstName);
+
+
+
+    public Page<Teacher> getAllTeachers(int pageNumber, int pageSize, String field, boolean asc){
+        if(asc){
+            return teacherRepo.findAll(PageRequest.of(pageNumber, pageSize).withSort(Sort.by(field)));
+        }
+        return teacherRepo.findAll(PageRequest.of(pageNumber, pageSize).withSort(Sort.by(field).descending()));
     }
 
-    public List<Student> getAllStudentWithLastName(String lastName){
-        return studentRepo.findStudentByLastName(lastName);
-    }
-
-
-
-
-
-    public List<Teacher> getAllTeachers(){
-        return teacherRepo.findAll();
-    }
-
-    public List<Teacher> getAllTeachersSorted(String field){
-        return teacherRepo.findAll(Sort.by(Sort.Direction.DESC,field));
-    }
-
-    public Page<Teacher> getAllTeachersWithPagination(int pageNumber, int pageSize){
-        return teacherRepo.findAll(PageRequest.of(pageNumber, pageSize));
-    }
-
-    public Page<Teacher> getAllTeachersSortedWithPagination(int pageNumber, int pageSize, String field){
-        return teacherRepo.findAll(PageRequest.of(pageNumber, pageSize).withSort(Sort.by(field)));
+    public List<Teacher> getTeachersWithName(String name){
+        return teacherRepo.findTeacherByFirstNameOrLastName(name, name);
     }
 
     public Teacher getTeacher(int id){
@@ -119,6 +103,15 @@ public class StudentTeacherService {
         teacherRepo.save(teacher);
     }
 
+    public List<Student> getAllTeacherStudents(int teacher_id){
+        Teacher teacher = getTeacher(teacher_id);
+        return teacher.getStudents();
+    }
+
+
+
+
+
     public void removeTeacherFromUser(int student_id, int teacher_id){
         Student student = getStudent(student_id);
         Teacher teacher = getTeacher(teacher_id);
@@ -129,18 +122,6 @@ public class StudentTeacherService {
         }
     }
 
-    public List<Student> getAllTeacherStudents(int teacher_id){
-        Teacher teacher = getTeacher(teacher_id);
-        return teacher.getStudents();
-    }
-
-    public List<Teacher> getAllTeachersWithFirstName(String firstName){
-        return teacherRepo.findStudentByFirstName(firstName);
-    }
-
-    public List<Teacher> getAllTeachersWithLastName(String lastName){
-        return teacherRepo.findStudentByLastName(lastName);
-    }
 
     public void assignTeacherToStudent(int student_id, int teacher_id){
         Student student = getStudent(student_id);

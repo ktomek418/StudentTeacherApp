@@ -1,5 +1,6 @@
 package com.us.studentTeacherApp.controller;
 
+
 import com.us.studentTeacherApp.model.Student;
 import com.us.studentTeacherApp.model.Teacher;
 import com.us.studentTeacherApp.service.StudentTeacherService;
@@ -21,46 +22,12 @@ public class StudentController {
         this.service = service;
     }
 
-    @GetMapping("")
-    public List<Student> getStudents() {
-        return service.getAllStudents();
-    }
-
-    @GetMapping("/firstNameLike/{firstName}")
-    public List<Student> getStudentsByFirstName(@PathVariable String firstName){
-        return service.getAllStudentWithFirstName(firstName);}
-
-    @GetMapping("/lastNameLike/{lastName}")
-    public List<Student> getStudentsByLastName(@PathVariable String lastName){
-        return service.getAllStudentWithLastName(lastName);}
-
-    @GetMapping("sortBy/{field}")
-    public List<Student> getStudentsSorted(@PathVariable String field) {
-        return service.getAllStudentsSorted(field);
-    }
-
-    @GetMapping("/{pageNumber}/{pageSize}")
-    public Page<Student> getStudentsWithPagination(@PathVariable int pageNumber, @PathVariable int pageSize){
-        return service.getAllStudentWithPagination(pageNumber, pageSize);
-    }
-
-    @GetMapping("/sortBy/{field}/{pageNumber}/{pageSize}")
-    public Page<Student> getStudentsSortedWithPagination(
-            @PathVariable String field, @PathVariable int pageNumber, @PathVariable int pageSize){
-        return service.getAllStudentSortedWithPagination(pageNumber, pageSize, field);
-    }
-
-    @PostMapping("/add")
+    @PostMapping("")
     public void addStudent(@Valid @RequestBody Student student) {
         service.saveStudent(student);
     }
 
-    @DeleteMapping("/{id}/delete")
-    public void deleteStudent(@PathVariable("id") int id) {
-        service.deleteStudent(id);
-    }
-
-    @PutMapping("/{id}/update")
+    @PutMapping("/{id}")
     public void updateStudent(@PathVariable int id,@Valid @RequestBody Student updatedStudent){
         Student student = service.getStudent(id);
         if(student != null){
@@ -73,19 +40,38 @@ public class StudentController {
         service.saveStudent(student);
     }
 
-    @PostMapping("/{id}/assignTeacher")
+    @DeleteMapping("/{id}")
+    public void deleteStudent(@PathVariable int id) {
+        service.deleteStudent(id);
+    }
+
+
+    @GetMapping("")
+    public Page<Student> getStudents(@RequestParam(defaultValue = "idStudent")String sortBy,
+                                     @RequestParam(defaultValue = "0") int pageNumber,
+                                     @RequestParam(defaultValue = "100") int pageSize,
+                                     @RequestParam(defaultValue = "true") boolean asc){
+        return service.getAllStudents(pageNumber, pageSize, sortBy, asc);
+    }
+
+    @GetMapping("/{field}")
+    public List<Student> getStudents(@PathVariable String field){
+        return service.getStudentsWithName(field);
+    }
+
+    @GetMapping("/{id}/teachers")
+    public List<Teacher> getAllStudentTeachers(@PathVariable int id){
+        return service.getAllStudentTeachers(id);
+    }
+
+    @PostMapping("/{id}/teachers")
     public void assignTeacher(@PathVariable int id, @RequestParam int teacher_id){
         service.assignTeacherToStudent(id, teacher_id);
     }
 
-    @PostMapping("/{id}/removeTeacher")
+    @DeleteMapping("/{id}/teachers")
     public void removeTeacher(@PathVariable int id, @RequestParam int teacher_id){
         service.removeTeacherFromUser(id, teacher_id);
-    }
-
-    @GetMapping("/{id}/allTeachers")
-    public List<Teacher> getAllStudentTeachers(@PathVariable int id){
-        return service.getAllStudentTeachers(id);
     }
 
 }
